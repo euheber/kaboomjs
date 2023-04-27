@@ -1,3 +1,5 @@
+
+
 kaboom({
   global:true,
   fullscreen:true,
@@ -35,27 +37,111 @@ scene("game", ()=>{
     '                                                       ',
     '                                                       ',
     '                                                       ',
-    '            $       $$$                                ',
-    '         ========  ======                              ',
+    '                                                       ',
+    '                                                       ',
     '                                                       ',  
     '                                                       ',  
+    '               $$                                      ',  
+    '            ========**                                 ',  
     '                                                       ',  
-    '                                                       ',  
-    '                                                       ',  
-    '        *                                              ',  
+    '                              -+                      ',  
+    '                 s            ()                       ',  
     '==========================   =========================='
   ]
 
   const levelCfg = { 
     width: 20,
     height: 20,
-    '=': [sprite('block', solid())],
+    '=': [sprite('block'), solid()],
     '$': [sprite('coin')],
-    '*': [sprite('mario')]
+    '*': [sprite('surprise'), solid(), 'coin-surprise'],
+    '}': [sprite('unboxed'), solid()],
+    '(': [sprite('pipe-bottom-left'), solid(), scale(0.5)],
+    ')': [sprite('pipe-bottom-right'), solid(), scale(0.5)],
+    '-': [sprite('pipe-top-left'), solid(), scale(0.5)],
+    '+': [sprite('pipe-top-right'), solid(), scale(0.5)],
+    's': [sprite('evil-shroom'), solid()]
   }
 
   const gameLevel = addLevel(map, levelCfg)
+
+  const scoreLabel = add([
+    text('score'),
+    pos(30,6),
+    layer('ui'),
+    {
+      value:'score'
+    }
+  ])
+
+
+  add([text('level' + 'test', pos(4,6))])
+
+  const isBig = ()=> {
+    let timer = 0
+    let isBig = false
+    return { 
+      update(){
+        if(isBig){
+          timer -= dt()
+          if(timer <= 0){
+            this.smallify()
+          }
+        }
+      },
+      isBig(){ 
+        return isBig
+      },
+      smallify(){
+        this.scale = vec2(1),
+        timer = 0,
+        isBig = false
+      },
+      biggify(time){ 
+        this.scale = vec2(2),
+        timer = 0,
+        isBig = true
+      }
+    }
+  }
+
+
+  const player = add([
+    sprite('mario', solid()),
+    pos(30, 0),
+    isBig(),
+    body(),
+    origin('bot')
+  ])
+
+  let PLAYER_MOVE_SPEED = 110
+  const PLAYER_JUMP_FORCE = 450
+
+ 
+  keyDown('a', ()=>  {
+    player.move(-PLAYER_MOVE_SPEED, 0)
+  })
+
+  keyDown('d', ()=> { 
+    player.move(PLAYER_MOVE_SPEED, 0)
+  })
+
+  keyPress('shift', ()=> { 
+    PLAYER_MOVE_SPEED += 100
+  })
+
+  keyRelease('shift', () => { 
+    PLAYER_MOVE_SPEED -= 100
+  })
+  keyPress('space', () => { 
+    if(player.grounded()){
+      player.jump(PLAYER_JUMP_FORCE)
+    }
+  })
 })
+
+
+
 start("game")
 
 
