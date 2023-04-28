@@ -44,7 +44,7 @@ scene("game", ()=>{
     '               $$                                      ',  
     '            ========**                                 ',  
     '                                                       ',  
-    '                              -+                      ',  
+    '                              -+                       ',  
     '                 s            ()                       ',  
     '==========================   =========================='
   ]
@@ -60,7 +60,8 @@ scene("game", ()=>{
     ')': [sprite('pipe-bottom-right'), solid(), scale(0.5)],
     '-': [sprite('pipe-top-left'), solid(), scale(0.5)],
     '+': [sprite('pipe-top-right'), solid(), scale(0.5)],
-    's': [sprite('evil-shroom'), solid()]
+    's': [sprite('evil-shroom'), solid()],
+    'mu': [sprite('mushroom'), solid()],
   }
 
   const gameLevel = addLevel(map, levelCfg)
@@ -113,6 +114,17 @@ scene("game", ()=>{
     body(),
     origin('bot')
   ])
+
+
+  player.on("headbump", obj => { 
+    if(obj.is('coin-surprise')) { 
+      gameLevel.spawn('mu', obj.gridPos.sub(0,1))
+      destroy(obj)
+      gameLevel.spawn("}", obj.gridPos.sub(0))
+    }
+
+
+  })
 
   let PLAYER_MOVE_SPEED = 110
   const PLAYER_JUMP_FORCE = 450
